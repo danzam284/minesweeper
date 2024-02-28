@@ -1,0 +1,53 @@
+<!Doctype html>
+<html>
+    <head>
+        <link rel="stylesheet" href="/public/style/style.css">
+    </head>
+    <body>
+    <h1 id="main">Multiplayer Minesweeper</h1>
+    <span hidden id="smallError">Room is already full</span>
+    <h1 id="msg"></h1>
+    <img hidden src="/public/images/lose.png" id="loseImg">
+
+    <span hidden id="share">Copy Room Link</span>
+    <div hidden id="waiting"></div>
+    <button class="joinButton" hidden id="leaveRoom" onclick="leaveRoom()">Leave Room</button>
+    <div hidden id="funFacts"></div>
+
+    <div id="rooms">
+        <h1>5 x 5</h1>
+        <div class="room" id="room0">
+            <span id="roomText0">0 / 2</span>
+            <button class="joinButton" disabled id="joinRoom0">Join Room</button>
+            <button class="localButton" onclick="window.location.href = '/public/pages/minesweeper.html?s=1&room=0'">Singleplayer</button>
+        </div>
+        <h1>8 x 8</h1>
+        <div class="room" id="room1">
+            <span id="roomText1">0 / 2</span>
+            <button class="joinButton" disabled id="joinRoom1">Join Room</button>
+            <button class="localButton" onclick="window.location.href = '/public/pages/minesweeper.html?s=1&room=1'">Singleplayer</button>
+        </div>
+        <h1>12 x 12</h1>
+        <div class="room" id="room2">
+            <span id="roomText2">0 / 2</span>
+            <button class="joinButton" disabled id="joinRoom2">Join Room</button>
+            <button class="localButton" onclick="window.location.href = '/public/pages/minesweeper.html?s=1&room=2'">Singleplayer</button>
+        </div>
+        <h1>15 x 15</h1>
+        <div class="room" id="room3">
+            <span id="roomText3">0 / 2</span>
+            <button class="joinButton" disabled id="joinRoom3">Join Room</button>
+            <button class="localButton" onclick="window.location.href = '/public/pages/minesweeper.html?s=1&room=3'">Singleplayer</button>
+        </div>
+        <h1>24 x 16</h1>
+        <div class="room" id="room4">
+            <span id="roomText4">0 / 2</span>
+            <button class="joinButton" disabled id="joinRoom4">Join Room</button>
+            <button class="localButton" onclick="window.location.href = '/public/pages/minesweeper.html?s=1&room=4'">Singleplayer</button>
+        </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/public/javascript/confetti.js"></script>
+    <script src="/public/javascript/index.js"></script>
+    </body>
+</html>

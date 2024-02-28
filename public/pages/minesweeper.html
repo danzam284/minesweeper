@@ -1,0 +1,18 @@
+<!Doctype html>
+<html>
+    <head>
+        <link rel="stylesheet" href="/public/style/style.css">
+    </head>
+    <body>
+        <div id="timer">0000</div>
+        <div id="flags">
+            <img style="width: 100px; height: 100px;" src="/public/images/flag.png">
+            <span id="flagCount"></span>
+        </div>
+        <div id="board"></div>
+        <div hidden id="halfMessage" class="msg"></div>
+        <div hidden id="endMessage" class="msg"></div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/public/javascript/minesweeper.js"></script>
+    </body>
+</html>

@@ -1,0 +1,248 @@
+html {
+    background-color: #28282B;
+}
+
+#timer {
+    width: 100%;
+    text-align: center;
+    font-size: 50px;
+    font-family: 'Sans-serif', monospace;
+    color: #03e9f4;
+    -webkit-text-stroke: 2px #000080;
+}
+#board {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
+}
+
+.row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tile {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    user-select: none;
+    border: 1px solid rgb(11, 170, 179);
+}
+
+#flags {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+#flagCount {
+    font-size: 50px;
+    font-family: 'Sans-serif', monospace;
+    color: #03e9f4;
+    -webkit-text-stroke: 2px #000080;
+}
+
+#rooms {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: #03e9f4;
+    margin-bottom: 50px;
+}
+
+.room {
+    align-items: center;
+    display: flex;
+    gap: 30px;
+}
+
+.joinButton {
+    width: 120px;
+    height: 50px;
+    border-radius: 8px;
+    background-color: #000080;
+    color: #03e9f4;
+    border: 1px solid black;
+}
+.joinButton:hover {
+    text-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
+    box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
+    cursor: pointer;
+}
+.joinButton:disabled {
+    background-color: #606060;
+}
+.joinButton:disabled:hover {
+    text-shadow: none;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+.localButton {
+    width: 120px;
+    height: 50px;
+    border-radius: 8px;
+    background-color: #008066;
+    color: #03f494;
+    border: 1px solid black;
+}
+
+.localButton:hover {
+    text-shadow: 0 0 5px #03f494, 0 0 25px #03f494, 0 0 50px #03f494, 0 0 100px #03f494;
+    box-shadow: 0 0 5px #03f494, 0 0 25px #03f494, 0 0 50px #03f494, 0 0 100px #03f494;
+    cursor: pointer;
+}
+
+#main {
+    text-align: center;
+    color: #000080;
+    font-size: 50px;
+    -webkit-text-stroke: 2px #03e9f4;
+}
+
+.msg {
+    width: 200px;
+    height: 200px;
+    background-color: rgba(255, 0, 0, 0.455);
+    color: #000000;
+    text-align: center;
+    font-weight: bold;
+    display: none;
+    align-items: center;
+    font-size: 40px;
+    user-select: none;
+    pointer-events: none;
+    animation: 3s message;
+    position: absolute;
+    left: calc(50% - 100px);
+    top: calc(50% - 100px);
+}
+
+@keyframes message {
+    0% {
+        width: 0px;
+        height: 0px;
+        font-size: 0px;
+        left: 50%;
+        top: 50%;
+    }
+    50% {
+        width: 200px;
+        height: 200px;
+        font-size: 40px;
+        left: calc(50% - 100px);
+        top: calc(50% - 100px);
+    }
+    100% {
+        width: 0px;
+        height: 0px;
+        font-size: 0px;
+        left: 50%;
+        top: 50%;
+    }
+}
+
+#waiting {
+    text-align: center;
+    margin-top: 200px;
+    color: #00801a;
+    font-size: 50px;
+    -webkit-text-stroke: 1px #03f437;
+    font-family: 'Courier New', monospace;
+}
+
+.wavy {
+    animation-name: wavy;
+    animation-duration: 1.3s;
+    animation-timing-function: ease;
+    animation-iteration-count: infinite;
+    position: relative;
+    top: 0;
+    left: 0;
+}
+@keyframes wavy {
+    0% {
+      top: 0px;
+    }
+    50% {
+      top: -15px;
+    }
+    100% {
+      top: 0px;
+    }
+}
+
+#leaveRoom {
+    margin-left: calc(50% - 60px);
+    margin-top: 50px;
+}
+
+@keyframes bomb {
+    from {
+        width: 40px;
+        height: 40px;
+    } to {
+        width: 50vw;
+        height: 50vw;
+    }
+}
+
+#funFacts {
+    width: 100%;
+    text-align: center;
+    margin-top: 200px;
+    color: #03e9f4;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.goodMessage {
+    color: #00801a;
+    -webkit-text-stroke: 1px #03f437;
+}
+
+.badMessage {
+    color: #800000;
+    -webkit-text-stroke: 1px #f40303;
+}
+
+#loseImg {
+    position: absolute;
+    width: 250px;
+}
+
+#share {
+    user-select: none;
+    padding: 30px;
+    position: absolute;
+    color: #5a0080;
+    -webkit-text-stroke: 1px #c003f4;
+    font-size: 30px;
+}
+
+#share:hover {
+    text-shadow: 0 0 5px #f4036b, 0 0 25px #f4036b, 0 0 50px #f4036b, 0 0 100px #f4036b;
+    cursor: pointer;
+}
+
+#smallError {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: red;
+}

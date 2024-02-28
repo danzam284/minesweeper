@@ -10,7 +10,6 @@ import { dirname } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
@@ -28,6 +27,7 @@ io.on('connection', socket => {
     let inGame = false;
     let won = false;
     for (let i = 0; i < rooms.length; i++) {
+        //Connects a user to a room
         socket.on("joinRoom" + i, _ => {
             if (rooms[i] === 2 || socketRoom !== -1) { return; }
             socket.join("room" + i);
@@ -37,17 +37,53 @@ io.on('connection', socket => {
                 io.to("room" + i).emit("ready");
             }
         });
+
+        //Connects a user to a game
         socket.on("joinGame" + i, _ => {
             inGame = true;
             socket.join("room" + i);
             rooms[i]++;
             socketRoom = i;
         });
+
+        //User wins
         socket.on("win" + i, _ => {
             won = true;
         });
+
+        //User loses due to bomb
+        socket.on("bomb" + i, _ => {
+            io.to("room" + i).emit("opponentLost");
+        });
+
+        //Used to check for refresh to disconnect
+        socket.on("amIAlone" + i, _ => {
+            if (rooms[i] === 1) {
+                socket.emit("youAreAlone");
+            }
+        });
+
+        //Emits to opponent that current user is halfway
+        socket.on("overHalf" + i, _ => {
+            io.to("room" + i).emit("halfWarning");
+        });
+
+        //Emits to opponent that current user is almost done
+        socket.on("nearEnd" + i, _ => {
+            io.to("room" + i).emit("endWarning");
+        });
+
+        //Disconnects a user from a room
+        socket.on("leaveRoom" + i, _ => {
+            if (socketRoom != -1 && rooms[socketRoom] == 1) {
+                rooms[socketRoom]--;
+                socket.leave("room" + i);
+                socketRoom = -1;
+            }
+        });
     }
 
+    //When a user disconnects
     socket.on('disconnect', _ => {
         if (socketRoom !== -1) {
             rooms[socketRoom]--;
@@ -67,16 +103,19 @@ io.on('connection', socket => {
 
 
 /*Routing*/
+
+//Base route
 router.route("/").get(async (req, res) => {
-    return res.sendFile(__dirname + '/public/index.html');
+    return res.sendFile(__dirname + '/public/pages/index.html');
 });
 
+//Sends list of all room data
 router.route("/rooms").get(async (req, res) => {
     return res.json(rooms);
 });
 
-
 app.use('/', router);
+
 
 server.listen(3000, () => {
   console.log("We've now got a server!");
