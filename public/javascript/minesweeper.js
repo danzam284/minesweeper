@@ -18,6 +18,8 @@ var board;
 var numRevealed = 0;
 var numClicks = 0;
 var opponentHitBomb = false;
+var lastTileClicked = -1;
+var noMoreAnimation = false;
 
 var sentHalfMessage = false;
 var recievedHalfMessage = false;
@@ -177,6 +179,9 @@ async function reveal(i, j, orig) {
     if (tileClicked.revealed || tileClicked.flagged) { return; }
     tileClicked.revealed = true;
     tileClicked.style.backgroundColor = COLORREVEALED;
+    if (orig) {
+        lastTileClicked = board[i][j];
+    }
 
     //Tile clicked is a bomb
     if (board[i][j] === -1) {
@@ -206,6 +211,7 @@ async function reveal(i, j, orig) {
             }
             
             //Board explosion animation
+            new Audio("/public/audio/mine.mp3").play();
             while (tiles.length) {
                 const idx = Math.floor(Math.random() * tiles.length);
                 const tile = tiles[idx];
@@ -232,10 +238,6 @@ async function reveal(i, j, orig) {
         }
     } else {
 
-        //Tile is valid
-        if (orig) {
-            new Audio("/public/audio/click.mp3").play();
-        }
         numRevealed++;
         let signaledThisRound = false;
         tileClicked.style.animation = "0.2s reveal";
@@ -321,6 +323,7 @@ function displayBoard() {
 
             //Triggers click or right click events for tiles
             tile.onclick = async (ev) => {
+                const prevRevealed = numRevealed;
                 if (numRevealed === 0) {
                     await reveal(i, j, true);
                     
@@ -334,6 +337,14 @@ function displayBoard() {
                 } else {
                     await reveal(i, j, true);
                 }
+
+                //Plays audio
+                if (numRevealed - prevRevealed > 1) {
+                    new Audio("/public/audio/bulk.mp3").play();
+                } else if (lastTileClicked > 0) {
+                    new Audio("/public/audio/" + lastTileClicked + ".mp3").play();
+                }
+
                 if (!single) {
                     socket.emit(player + "updateBoard" + room, boardElement.innerHTML);
                 }
@@ -377,6 +388,9 @@ setInterval(function() {
 
 //Alters the enemy board to be smaller and not show animations
 function updateEnemyBoard() {
+    if (noMoreAnimation) {
+        boardElement2.style.animation = "";
+    }
     for (let i = 0; i < boardElement2.childElementCount; i++) {
         const row = boardElement2.childNodes[i];
         for (let j = 0; j < row.childElementCount; j++) {
@@ -407,10 +421,8 @@ cb.addEventListener('click', function() {
     document.getElementById("toggleText").innerHTML = cb.checked ? "Show Opponent" : "Hide Opponent";
     if (cb.checked) {
         boardElement2.style.display = "none";
-        //boardElement.style.left = "calc(50% - " + (((tileSize / 2) + 1) * COLS) + "px";
     } else {
         boardElement2.style.display = "flex";
-        //boardElement.style.left = "calc(70% - " + (((tileSize / 2) + 1) * COLS) + "px";
     }
 }, false);
 
@@ -426,12 +438,16 @@ window.onload = function(){
 //Manages board detail animation
 boardElement.onanimationend = async function() {
     document.getElementById("inform").innerHTML = "Opponent's Board";
-    boardElement2.style.animation = "2.5s flash";
+    if (!noMoreAnimation) {
+        boardElement2.style.animation = "2.5s flash";
+    }
     if (single || cb.checked) {
         document.getElementById("inform").style.display = "none";
-    }
+        noMoreAnimation = true;
+    } 
 }
 boardElement2.onanimationend = function() {
     boardElement2.style.animation = "";
     document.getElementById("inform").style.display = "none";
+    noMoreAnimation = true;
 }
