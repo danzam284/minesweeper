@@ -2,12 +2,17 @@ var ROWS = 14;
 var COLS = 18;
 var MINES = 40;
 const boardElement = document.getElementById("board");
+const boardElement2 = document.getElementById("board2");
 const halfElement = document.getElementById("halfMessage");
 const endElement = document.getElementById("endMessage");
 const flagCount = document.getElementById("flagCount");
+const cb = document.getElementById('cb-toggle');
 const COLOR1 = "#000080";
-const COLOR2 = "#000070";
+const COLOR2 = "#000060";
+const COLORHOVER = "#00437d";
 const COLORREVEALED = "#C6E6FB";
+const REQUIREMENT = 0.3;
+const tileSize = 30;
 var time = 0;
 var board;
 var numRevealed = 0;
@@ -25,6 +30,7 @@ var displayedEndMessage = false;
 const room = window.location.href.charAt(window.location.href.length - 1);
 const searchParams = new URLSearchParams(window.location.search);
 const single = searchParams.has('s');
+const player = searchParams.has('player') ? searchParams.get("player") : undefined;
 
 //Initializes socket
 var socket;
@@ -100,6 +106,19 @@ if (!single) {
         }
         recievedEndMessage = true;
     });
+
+    socket.on("board1updated", board => {
+        if (player === "2") {
+            document.getElementById("board2").innerHTML = board;
+            updateEnemyBoard();
+        }
+    });
+    socket.on("board2updated", board => {
+        if (player === "1") {
+            document.getElementById("board2").innerHTML = board;
+            updateEnemyBoard();
+        }
+    });
 }
 
 /* Randomly Generates a game board and calculates all tiles*/
@@ -155,6 +174,9 @@ async function reveal(i, j, orig) {
             tileClicked.lastChild.src = "/public/images/bomb.png";
             tileClicked.lastChild.hidden = false;
             tileClicked.lastChild.style.animation = "0.5s bomb";
+            if (!single) {
+                socket.emit(player + "updateBoard" + room, boardElement.innerHTML);
+            }
             await sleep(500);
             tileClicked.lastChild.hidden = true;
 
@@ -200,6 +222,7 @@ async function reveal(i, j, orig) {
         }
         numRevealed++;
         let signaledThisRound = false;
+        tileClicked.style.animation = "0.2s reveal";
 
         //Emits signals if over halfway or almost done
         if (!sentHalfMessage && !single && numRevealed >= (ROWS * COLS - MINES) / 2) {
@@ -240,14 +263,24 @@ async function reveal(i, j, orig) {
 }
 
 /*Flags a tile*/
-function flag(i, j) {
+async function flag(i, j) {
     const tileClicked = boardElement.childNodes[i].childNodes[j];
     if (tileClicked.revealed) { return; };
     if (!tileClicked.releaved) {
         new Audio("/public/audio/flag.mp3").play();
-        tileClicked.lastChild.hidden = tileClicked.flagged;
         tileClicked.flagged = !tileClicked.flagged;
         flagCount.innerHTML = parseInt(flagCount.innerHTML) + (tileClicked.flagged ? -1 : 1);
+        if (tileClicked.flagged) {
+            tileClicked.lastChild.hidden = false;
+            tileClicked.lastChild.animate([{ width: "100px", height: "100px" }, { width: tileSize + "px", height: tileSize + "px" }], { duration: 200 });
+        } else {
+            tileClicked.lastChild.animate([{ width: tileSize + "px", height: tileSize + "px" }, { width: "0px", height: "0px" }], { duration: 300 });
+            await sleep(200);
+            tileClicked.lastChild.hidden = true;
+        }
+    }
+    if (!single) {
+        socket.emit(player + "updateBoard" + room, boardElement.innerHTML);
     }
 }
 
@@ -255,8 +288,14 @@ function flag(i, j) {
 function displayBoard() {
 
     //Adjusts position based on size of board
-    boardElement.style.top = "calc(50% - " + (21 * ROWS) + "px";
-    boardElement.style.left = "calc(50% - " + (21 * COLS) + "px";
+    boardElement.style.top = "calc(50% - " + (((tileSize / 2) + 1) * ROWS) + "px";
+    if (!single && !cb.checked) {
+        boardElement.style.left = "calc(70% - " + (((tileSize / 2) + 1) * COLS) + "px";
+        boardElement2.style.left = "calc(30% - " + (((tileSize / 4) + 1) * COLS) + "px";
+        boardElement2.style.top = "calc(50% - " + (((tileSize / 4) + 1) * COLS) + "px";
+    } else {
+        boardElement.style.left = "calc(50% - " + (((tileSize / 2) + 1) * COLS) + "px";
+    }
     boardElement.innerHTML = "";
 
     for (let i = 0; i < ROWS; i++) {
@@ -270,11 +309,28 @@ function displayBoard() {
             tile.className = "tile";
 
             //Creates hover effect for tiles
-            tile.onmouseenter = () => { if (!tile.revealed) { tile.style.backgroundColor = COLORREVEALED;}};
+            tile.onmouseenter = () => { if (!tile.revealed) { tile.style.backgroundColor = COLORHOVER;}};
             tile.onmouseleave = () => { if (!tile.revealed) { tile.style.backgroundColor = ((i + j) % 2) ? COLOR1 : COLOR2;}};
 
             //Triggers click or right click events for tiles
-            tile.onclick = async (ev) => { await reveal(i, j, true); };
+            tile.onclick = async (ev) => {
+                if (numRevealed === 0) {
+                    await reveal(i, j, true);
+                    
+                    while (numRevealed < REQUIREMENT * ROWS * COLS) {
+                        generateBoard();
+                        displayBoard();
+                        numRevealed = 0;
+                        await reveal(i, j, true);
+                    }
+                    
+                } else {
+                    await reveal(i, j, true);
+                }
+                if (!single) {
+                    socket.emit(player + "updateBoard" + room, boardElement.innerHTML);
+                }
+            };
             tile.addEventListener('contextmenu', (ev) => {
                 flag(i, j);
                 ev.preventDefault();
@@ -290,14 +346,18 @@ function displayBoard() {
             //Prepares flag for tiles
             const flagImg = document.createElement("img");
             flagImg.style.zIndex = "1";
-            flagImg.style.width = "40px";
-            flagImg.style.height = "40px";
+            flagImg.style.width = tileSize + "px";
+            flagImg.style.height = tileSize + "px";
             flagImg.src = "/public/images/flag.png";
             flagImg.hidden = true;
             tile.appendChild(flagImg);
             rowElement.appendChild(tile);
         }
         boardElement.appendChild(rowElement);
+    }
+    if (!single && boardElement2.childElementCount < 5) {
+        boardElement2.innerHTML = boardElement.innerHTML;
+        updateEnemyBoard();
     }
 }
 generateBoard();
@@ -307,6 +367,19 @@ displayBoard();
 setInterval(function() {
     document.getElementById("timer").innerHTML = String(++time).padStart(4, '0');
 }, 1000);
+
+function updateEnemyBoard() {
+    for (let i = 0; i < boardElement2.childElementCount; i++) {
+        const row = boardElement2.childNodes[i];
+        for (let j = 0; j < row.childElementCount; j++) {
+            row.childNodes[j].style.width = (tileSize / 2) + "px";
+            row.childNodes[j].style.height = (tileSize / 2) + "px";
+            row.childNodes[j].lastChild.style.width = (tileSize / 2) + "px";
+            row.childNodes[j].lastChild.style.height = (tileSize / 2) + "px";
+            row.childNodes[j].style.animation = "";
+        }
+    }
+}
 
 //Used to check if current user refreshed (if so disconnect)
 if (!single) {
@@ -320,3 +393,14 @@ if (!single) {
 function sleep(ms = 0) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+cb.addEventListener('click', function() {
+    document.getElementById("toggleText").innerHTML = cb.checked ? "Show Opponent" : "Hide Opponent";
+    if (cb.checked) {
+        boardElement2.style.display = "none";
+        boardElement.style.left = "calc(50% - " + (((tileSize / 2) + 1) * COLS) + "px";
+    } else {
+        boardElement2.style.display = "flex";
+        boardElement.style.left = "calc(70% - " + (((tileSize / 2) + 1) * COLS) + "px";
+    }
+}, false);
