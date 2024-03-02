@@ -3,6 +3,7 @@ const roomsElement = document.getElementById("rooms");
 var rooms = [0, 0, 0, 0, 0];
 var lastRoomJoined = -1;
 var showKrabs = false;
+var player = -1;
 
 const funFacts = [
     "Minesweeper was created by Curt Johnson in 1989 and gained popularity when it was included in Microsoft Windows operating systems.",
@@ -87,9 +88,13 @@ async function getRoomData() {
     }
 }
 
+socket.on("player", p => {
+    player = p;
+});
+
 //Recieves socket signal to start the game
 socket.on("ready", async _ => {
-    window.location.href = "/public/pages/minesweeper.html?room=" + lastRoomJoined;
+    window.location.href = "/public/pages/minesweeper.html?player=" + player + "&room=" + lastRoomJoined;
 });
 
 //Used for wavy text in waiting room
