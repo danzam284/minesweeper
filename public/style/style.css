@@ -1,5 +1,6 @@
 html {
     background-color: #28282B;
+    overflow-x: hidden;
 }
 
 #timer {
@@ -10,15 +11,28 @@ html {
     color: #03e9f4;
     -webkit-text-stroke: 2px #000080;
 }
+
+#inform {
+    width: 100%;
+    text-align: center;
+    font-size: 50px;
+    font-family: 'Sans-serif', monospace;
+    color: #03e9f4;
+    -webkit-text-stroke: 2px #000080;
+    position: absolute;
+    animation: 2.5s textFlash 2;
+
+}
+
 #board {
     display: flex;
     justify-content: center;
     flex-direction: column;
     align-items: center;
-    position: absolute;
     top: 50%;
     left: 50%;
     box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
+    animation: 2.5s flash;
 }
 
 #board2 {
@@ -26,11 +40,20 @@ html {
     justify-content: center;
     flex-direction: column;
     align-items: center;
-    position: absolute;
     top: 50%;
     left: 50%;
-    box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
+    box-shadow: 0 0 5px #f413038b, 0 0 25px #f413038b, 0 0 50px #f413038b, 0 0 100px #f413038b;
     pointer-events: none;
+}
+
+#boards {
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
 }
 
 .row {
@@ -321,4 +344,36 @@ html {
     right: 15px;
     font-weight: bold;
     color: aliceblue;
+}
+
+@keyframes flash {
+    0% {
+        box-shadow: none;
+    } 16.67% {
+        box-shadow: 0 0 5px #03f494, 0 0 25px #03f494, 0 0 50px #03f494, 0 0 100px #03f494;
+    } 33% {
+        box-shadow: none;
+    } 50% {
+        box-shadow: 0 0 5px #03f494, 0 0 25px #03f494, 0 0 50px #03f494, 0 0 100px #03f494;
+    } 66% {
+        box-shadow: none;
+    } 83.33% {
+        box-shadow: 0 0 5px #03f494, 0 0 25px #03f494, 0 0 50px #03f494, 0 0 100px #03f494;
+    }
+}
+
+@keyframes textFlash {
+    0% {
+        text-shadow: none;
+    } 16.67% {
+        text-shadow: 0 0 5px #03f494, 0 0 25px #03f494, 0 0 50px #03f494, 0 0 100px #03f494;
+    } 33% {
+        text-shadow: none;
+    } 50% {
+        text-shadow: 0 0 5px #03f494, 0 0 25px #03f494, 0 0 50px #03f494, 0 0 100px #03f494;
+    } 66% {
+        text-shadow: none;
+    } 83.33% {
+        text-shadow: 0 0 5px #03f494, 0 0 25px #03f494, 0 0 50px #03f494, 0 0 100px #03f494;
+    }
 }
