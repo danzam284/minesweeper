@@ -21,6 +21,18 @@ html {
     box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
 }
 
+#board2 {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
+    pointer-events: none;
+}
+
 .row {
     display: flex;
     justify-content: center;
@@ -28,8 +40,8 @@ html {
 }
 
 .tile {
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     font-size: 20px;
     display: flex;
     justify-content: center;
@@ -202,6 +214,24 @@ html {
     }
 }
 
+@keyframes reveal {
+    from {
+        font-size: 100px;
+        background-color: #00437d;
+    } to {
+        font-size: 20px;
+        background-color: #C6E6FB;
+    }
+}
+
+@keyframes flag {
+    from {
+        background-color: red;
+    } to {
+        background-color: #00437d;
+    }
+}
+
 #funFacts {
     width: 100%;
     text-align: center;
@@ -245,4 +275,50 @@ html {
     top: 10px;
     left: 10px;
     color: red;
+}
+
+
+
+.toggle {
+    position: absolute;
+    top: 45px;
+    right: 45px;
+    display: inline-block;
+    margin-top: 0.5rem;
+    width: 50px;
+    height: 26px;
+    background-color: #03e9f4;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.25s ease-in;
+}
+.toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 26px;
+    width: 22px;
+    height: 22px;
+    background-color: white;
+    border-radius: 50%;
+    transition: all 0.25s ease-out;
+}
+#cb-toggle:checked + .toggle {
+    background-color: hsl(0, 0%, 85%);
+}
+#cb-toggle:checked + .toggle::after {
+    transform: translateX(-24px);
+}
+.hide-me {
+    opacity: 0;
+    height: 0;
+    width: 0;
+}
+
+#toggleText {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-weight: bold;
+    color: aliceblue;
 }
