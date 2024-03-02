@@ -32,6 +32,12 @@ const searchParams = new URLSearchParams(window.location.search);
 const single = searchParams.has('s');
 const player = searchParams.has('player') ? searchParams.get("player") : undefined;
 
+if (single) {
+    document.getElementById("toggleText").style.display = "none";
+    document.getElementById("cb-toggle").style.display = "none";
+    document.getElementById("toggleBody").style.display = "none";
+}
+
 //Initializes socket
 var socket;
 if (!single) {
@@ -55,6 +61,16 @@ if (room === "0") {
 }
 
 flagCount.innerHTML = MINES;
+
+//Dynamic resizing of boards
+document.getElementById("boards").style.top = "calc(50% - " + (ROWS * tileSize / 2) + "px)";
+addEventListener("resize", (event) => {
+    if (!single) {
+        const spaceTaken = COLS * tileSize * 1.5;
+        const spaceAvailable = window.innerWidth - spaceTaken;
+        document.getElementById("boards").style.gap = (spaceAvailable / 3) + "px";
+    }
+});
 
 halfElement.onanimationend = function() { this.style.display = "none"; this.hidden = true; };
 endElement.onanimationend = function() { this.style.display = "none"; this.hidden = true; };
@@ -287,15 +303,6 @@ async function flag(i, j) {
 /*Converts the board array to a html board*/
 function displayBoard() {
 
-    //Adjusts position based on size of board
-    boardElement.style.top = "calc(50% - " + (((tileSize / 2) + 1) * ROWS) + "px";
-    if (!single && !cb.checked) {
-        boardElement.style.left = "calc(70% - " + (((tileSize / 2) + 1) * COLS) + "px";
-        boardElement2.style.left = "calc(30% - " + (((tileSize / 4) + 1) * COLS) + "px";
-        boardElement2.style.top = "calc(50% - " + (((tileSize / 4) + 1) * COLS) + "px";
-    } else {
-        boardElement.style.left = "calc(50% - " + (((tileSize / 2) + 1) * COLS) + "px";
-    }
     boardElement.innerHTML = "";
 
     for (let i = 0; i < ROWS; i++) {
@@ -368,6 +375,7 @@ setInterval(function() {
     document.getElementById("timer").innerHTML = String(++time).padStart(4, '0');
 }, 1000);
 
+//Alters the enemy board to be smaller and not show animations
 function updateEnemyBoard() {
     for (let i = 0; i < boardElement2.childElementCount; i++) {
         const row = boardElement2.childNodes[i];
@@ -394,13 +402,36 @@ function sleep(ms = 0) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+//Handles toggle switching
 cb.addEventListener('click', function() {
     document.getElementById("toggleText").innerHTML = cb.checked ? "Show Opponent" : "Hide Opponent";
     if (cb.checked) {
         boardElement2.style.display = "none";
-        boardElement.style.left = "calc(50% - " + (((tileSize / 2) + 1) * COLS) + "px";
+        //boardElement.style.left = "calc(50% - " + (((tileSize / 2) + 1) * COLS) + "px";
     } else {
         boardElement2.style.display = "flex";
-        boardElement.style.left = "calc(70% - " + (((tileSize / 2) + 1) * COLS) + "px";
+        //boardElement.style.left = "calc(70% - " + (((tileSize / 2) + 1) * COLS) + "px";
     }
 }, false);
+
+//Equally spaces boards
+window.onload = function(){
+    if (!single) {
+        const spaceTaken = COLS * tileSize * 1.5;
+        const spaceAvailable = window.innerWidth - spaceTaken;
+        document.getElementById("boards").style.columnGap = (spaceAvailable / 3) + "px";
+    }
+}
+
+//Manages board detail animation
+boardElement.onanimationend = async function() {
+    document.getElementById("inform").innerHTML = "Opponent's Board";
+    boardElement2.style.animation = "2.5s flash";
+    if (single || cb.checked) {
+        document.getElementById("inform").style.display = "none";
+    }
+}
+boardElement2.onanimationend = function() {
+    boardElement2.style.animation = "";
+    document.getElementById("inform").style.display = "none";
+}
