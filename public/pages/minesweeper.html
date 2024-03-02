@@ -6,19 +6,23 @@
     </head>
     <body>
         <div id="timer">0000</div>
+        <span id="inform">Your Board</span>
         <div id="flags">
             <img style="width: 100px; height: 100px;" src="/public/images/flag.png">
             <span id="flagCount"></span>
         </div>
-        <div id="board"></div>
-        <div id="board2"></div>
+
+        <div id="boards">
+            <div id="board2"></div>
+            <div id="board"></div>
+        </div>
 
         <div hidden id="halfMessage" class="msg"></div>
         <div hidden id="endMessage" class="msg"></div>
 
         <span id="toggleText">Hide Opponent</span>
         <input id="cb-toggle" type="checkbox" class="hide-me" aria-labelledby="cb-label">
-        <label for="cb-toggle" class="toggle"></label>
+        <label for="cb-toggle" class="toggle" id="toggleBody"></label>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/public/javascript/minesweeper.js"></script>
     </body>
