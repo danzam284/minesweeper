@@ -26,6 +26,7 @@ io.on('connection', socket => {
     let socketRoom = -1;
     let inGame = false;
     let won = false;
+    let player = -1;
     for (let i = 0; i < rooms.length; i++) {
         //Connects a user to a room
         socket.on("joinRoom" + i, _ => {
@@ -34,7 +35,12 @@ io.on('connection', socket => {
             rooms[i]++;
             socketRoom = i;
             if (rooms[i] === 2) {
+                player = 2;
+                socket.emit("player", player);
                 io.to("room" + i).emit("ready");
+            } else {
+                player = 1;
+                socket.emit("player", player);
             }
         });
 
@@ -44,6 +50,14 @@ io.on('connection', socket => {
             socket.join("room" + i);
             rooms[i]++;
             socketRoom = i;
+        });
+
+        socket.on("1updateBoard" + i, board => {
+            io.to("room" + i).emit("board1updated", board);
+        });
+
+        socket.on("2updateBoard" + i, board => {
+            io.to("room" + i).emit("board2updated", board);
         });
 
         //User wins
