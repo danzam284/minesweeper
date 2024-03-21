@@ -341,7 +341,7 @@ function displayBoard() {
                 //Plays audio
                 if (numRevealed - prevRevealed > 1) {
                     new Audio("/public/audio/bulk.mp3").play();
-                } else if (lastTileClicked > 0) {
+                } else if (numRevealed > prevRevealed && lastTileClicked > 0) {
                     new Audio("/public/audio/" + lastTileClicked + ".mp3").play();
                 }
 
